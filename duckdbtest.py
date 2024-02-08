@@ -43,10 +43,12 @@ def get_session():
 
 # FastAPI code
 app = FastAPI()
+# Template folder
+templates = Jinja2Templates(directory="templates")
 
 
-@app.get('/')
-def read_root():
+@app.get('/', response_class=HTMLResponse)
+def read_root(request: Request):
     return {"Hello": "World"}
 
 @app.get('/all')
