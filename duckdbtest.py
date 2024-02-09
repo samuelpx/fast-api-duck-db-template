@@ -48,14 +48,14 @@ templates = Jinja2Templates(directory="templates")
 
 
 @app.get('/', response_class=HTMLResponse)
-def read_root(request: Request):
-    context = {'request': request}
+def read_root(request: Request, message: str= "This is Home. You will die."):
+    context = {'request': request, 'message': message}
     return templates.TemplateResponse("index.html", context)
 
 @app.get('/message/{message}', response_class=HTMLResponse)
 def write_message(request: Request, message: str):
     context = {'request': request, 'message': message}
-    return templates.TemplateResponse("index.html", context)
+    return templates.TemplateResponse("message.html", context)
 
 @app.get('/all')
 def getItems(session: Session = Depends(get_session)):
