@@ -43,11 +43,19 @@ def get_session():
 
 # FastAPI code
 app = FastAPI()
+# Template folder
+templates = Jinja2Templates(directory="templates")
 
 
-@app.get('/')
-def read_root():
-    return {"Hello": "World"}
+@app.get('/', response_class=HTMLResponse)
+def read_root(request: Request):
+    context = {'request': request}
+    return templates.TemplateResponse("index.html", context)
+
+@app.get('/message/{message}', response_class=HTMLResponse)
+def write_message(request: Request, message: str):
+    context = {'request': request, 'message': message}
+    return templates.TemplateResponse("index.html", context)
 
 @app.get('/all')
 def getItems(session: Session = Depends(get_session)):
