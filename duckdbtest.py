@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 #-----------------
+from random import randint
 from sqlalchemy import Column, Integer, Sequence, String, create_engine 
 from pydantic import BaseModel
 
@@ -46,14 +47,23 @@ app = FastAPI()
 # Template folder
 templates = Jinja2Templates(directory="templates")
 
+RANDOM_MESSAGE_ARRAY = ["tem Carnaval aí?", "Melância", "bota o diuno no grupo"]
+
 
 @app.get('/', response_class=HTMLResponse)
 def read_root(request: Request, message: str= "This is Home. You will die."):
     context = {'request': request, 'message': message}
     return templates.TemplateResponse("index.html", context)
 
+@app.get('/fragment', response_class=HTMLResponse)
+def random_message(request: Request, message: str= "This is Home. You will die."):
+    random_fragment = RANDOM_MESSAGE_ARRAY[randint(0,2)]
+    message = message + " " + random_fragment
+    context = {'request': request, 'message': message}
+    return templates.TemplateResponse("index.html", context)
+
 @app.get('/message/{message}', response_class=HTMLResponse)
-def write_message(request: Request, message: str):
+def write_message(request: Request, message: str = ""):
     context = {'request': request, 'message': message}
     return templates.TemplateResponse("message.html", context)
 
