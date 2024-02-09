@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, declarative_base, sessionmaker
 from random import randint
 from sqlalchemy import Column, Integer, Sequence, String, create_engine 
 from pydantic import BaseModel
+from typing import Optional
 
 Base = declarative_base()
 
@@ -60,10 +61,16 @@ def random_message(request: Request, message: str= "This is Home. You will die."
     random_fragment = RANDOM_MESSAGE_ARRAY[randint(0,2)]
     message = message + " " + random_fragment
     context = {'request': request, 'message': message}
+    return templates.TemplateResponse("message.html", context)
+
+
+@app.get("/message", response_class=HTMLResponse)
+def write_message(request: Request, message: Optional[str] = "WTf rofl"):
+    context = {'request': request, 'message': message}
     return templates.TemplateResponse("index.html", context)
 
-@app.get('/message/{message}', response_class=HTMLResponse)
-def write_message(request: Request, message: str = ""):
+@app.get("/message/{message}", response_class=HTMLResponse)
+def write_specific_message(request: Request, message: Optional[str] = None):
     context = {'request': request, 'message': message}
     return templates.TemplateResponse("message.html", context)
 
@@ -74,7 +81,7 @@ def getItems(session: Session = Depends(get_session)):
         return "Item not found! you suck!"
     return items
 
-@app.get('/{id}')
+@app.get('/id/{id}')
 def getItem(id: int, session: Session = Depends(get_session)):
     item = session.query(Item).get(id)
     if item is None:
