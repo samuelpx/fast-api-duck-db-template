@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 #-----------------
-from sqlalchemy import Column, Integer, Sequence, String, create_engine, MetaData
+from sqlalchemy import Column, Integer, Sequence, String, create_engine 
 from pydantic import BaseModel
 
 Base = declarative_base()
