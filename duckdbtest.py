@@ -12,14 +12,14 @@ from typing import Optional
 Base = declarative_base()
 
 class Item_pydantic(BaseModel):
-    task: str
+    secret: str
 
 
 class Item(Base):  # type: ignore
     __tablename__ = "items"
 
     id = Column(Integer, Sequence("items_id_sequence"), primary_key=True)
-    task = Column(String)
+    secret = Column(String)
 
 
 eng = create_engine("duckdb:///duck.db")
@@ -99,7 +99,7 @@ def getItem(id: int, session: Session = Depends(get_session)):
 # OPTION #2 - USING PYDANTIC
 @app.post('/')
 def addItem(item: Item_pydantic, session = Depends(get_session)):
-    item = Item(task = item.task)
+    item = Item(secret = item.secret)
     session.add(item)
     session.commit()
     session.refresh(item)
@@ -117,7 +117,7 @@ def updateItem(id: int, item: Item_pydantic, session = Depends(get_session)):
     itemObject = session.query(Item).get(id)
     if itemObject is None:
         return "Item not found! you suck!"
-    itemObject.task = item.task
+    itemObject.secret = item.secret
     session.commit()
     return itemObject
 
