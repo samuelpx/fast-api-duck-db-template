@@ -97,13 +97,14 @@ def getItem(id: int, session: Session = Depends(get_session)):
 #    return fake_database
 
 # OPTION #2 - USING PYDANTIC
-@app.post('/')
-def addItem(secret: str = Form(...), session = Depends(get_session)):
+@app.post('/', response_class=HTMLResponse)
+def addItem(request: Request, secret: str = Form(...), session = Depends(get_session)):
     item = Item(secret = secret)
     session.add(item)
     session.commit()
     session.refresh(item)
-    return item
+    context = {'request': request}
+    return templates.TemplateResponse("form_response.html", context)
         
 # OPTION #3 - 
 #@app.post('/')

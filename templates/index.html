@@ -13,7 +13,7 @@
         <div class="container w-1/3 mx-auto mt-10 text-center">
             <h1 class="text-6xl font-bold text-purple-500">{{ message }}</h1>
             <div class="bg-gray-800 px-3 py-8 rounded-lg mb-4 mt-40">
-      <form hx-post="/" hx-trigger="submit" hx-swap="outerHTML" >
+      <form hx-post="/" hx-trigger="submit" hx-swap="outerHTML">
         <div class="mb-4">
           <label for="inputText" class="block text-sm">Enter Secret:</label>
           <input type="text" id="inputText" name="secret" class="w-2/4 px-3 py-2 rounded border border-purple-500 bg-gray-900 text-purple-200 focus:outline-none focus:border-purple-700">
@@ -22,7 +22,5 @@
       </form>
     </div>
 
-    <div id="output"></div>
-        </div>
     </body>
 </html>
