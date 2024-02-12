@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, Body, Request
+from fastapi import Depends, FastAPI, Body, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -98,8 +98,8 @@ def getItem(id: int, session: Session = Depends(get_session)):
 
 # OPTION #2 - USING PYDANTIC
 @app.post('/')
-def addItem(item: Item_pydantic, session = Depends(get_session)):
-    item = Item(secret = item.secret)
+def addItem(secret: str = Form(...), session = Depends(get_session)):
+    item = Item(secret = secret)
     session.add(item)
     session.commit()
     session.refresh(item)
