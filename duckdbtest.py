@@ -1,6 +1,6 @@
 from fastapi import Depends, FastAPI, Body, Form, Request
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
+#from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 #-----------------
@@ -22,20 +22,14 @@ class Item(Base):  # type: ignore
     secret = Column(String)
 
 
+#DDB Engine definition
 eng = create_engine("duckdb:///duck.db")
 
 Base.metadata.create_all(eng)
 SessionLocal = sessionmaker(eng)
-#------------ DUCKDB session stuff
-# session = Session(bind=eng)
-# 
-# session.add(FakeModel(name="Frank"))
-# session.commit()
 
-# frank = session.query(FakeModel).one()
 
-#----------- MAIN.PY
-
+#Session definition
 def get_session():
     session = SessionLocal()
     try:
@@ -43,11 +37,15 @@ def get_session():
     finally:
         session.close()
 
+
 # FastAPI code
 app = FastAPI()
+
+
 # Template folder
 templates = Jinja2Templates(directory="templates")
 
+#List of messages
 RANDOM_MESSAGE_ARRAY = ["tem Carnaval aí?", "Melância", "bota o diuno no grupo"]
 
 
@@ -55,6 +53,7 @@ RANDOM_MESSAGE_ARRAY = ["tem Carnaval aí?", "Melância", "bota o diuno no grupo
 def read_root(request: Request, message: str= "This is Home. You will die."):
     context = {'request': request, 'message': message}
     return templates.TemplateResponse("index.html", context)
+
 
 @app.get('/fragment', response_class=HTMLResponse)
 def random_message(request: Request, message: str= "This is Home. You will die."):
@@ -69,10 +68,12 @@ def write_message(request: Request, message: Optional[str] = "WTf rofl"):
     context = {'request': request, 'message': message}
     return templates.TemplateResponse("index.html", context)
 
+
 @app.get("/message/{message}", response_class=HTMLResponse)
 def write_specific_message(request: Request, message: Optional[str] = None):
     context = {'request': request, 'message': message}
     return templates.TemplateResponse("message.html", context)
+
 
 @app.get('/all')
 def getItems(session: Session = Depends(get_session)):
@@ -81,6 +82,7 @@ def getItems(session: Session = Depends(get_session)):
         return "Item not found! you suck!"
     return items
 
+
 @app.get('/id/{id}')
 def getItem(id: int, session: Session = Depends(get_session)):
     item = session.query(Item).get(id)
@@ -88,15 +90,7 @@ def getItem(id: int, session: Session = Depends(get_session)):
         return "Item not found! you suck!"
     return item
 
-# OPTION #1 - NO PYDANTIC
-#@app.post("/")
-#def addItem(task: str):
-#    newId = len(fake_database.keys()) + 1
-#    fake_database[newId] = {'task':task}
-#    
-#    return fake_database
 
-# OPTION #2 - USING PYDANTIC
 @app.post('/', response_class=HTMLResponse)
 def addItem(request: Request, secret: str = Form(...), session = Depends(get_session)):
     item = Item(secret = secret)
@@ -106,12 +100,6 @@ def addItem(request: Request, secret: str = Form(...), session = Depends(get_ses
     context = {'request': request}
     return templates.TemplateResponse("form_response.html", context)
         
-# OPTION #3 - 
-#@app.post('/')
-#def addItem(body = Body()):
-#    newId = len(fake_database.keys()) + 1
-#    fake_database[newId] = {'task': body['task']}
-#    return fake_database
    
 @app.put('/{id}')
 def updateItem(id: int, item: Item_pydantic, session = Depends(get_session)):
@@ -121,6 +109,7 @@ def updateItem(id: int, item: Item_pydantic, session = Depends(get_session)):
     itemObject.secret = item.secret
     session.commit()
     return itemObject
+
 
 @app.delete('/{id}')
 def deleteItem(id: int, session = Depends(get_session)):
