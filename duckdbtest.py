@@ -15,7 +15,7 @@ class Item_pydantic(BaseModel):
     secret: str
 
 
-class Item(Base):  # type: ignore
+class Item(Base):  
     __tablename__ = "items"
 
     id = Column(Integer, Sequence("items_id_sequence"), primary_key=True)
